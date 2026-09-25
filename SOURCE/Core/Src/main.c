@@ -133,6 +133,7 @@ int main(void)
   setTimer3(250);
   setTimer4(1000);
   setTimer5(10);
+  TIME_CYCLES = ( (htim2.Init.Prescaler+1)*(htim2.Init.Period + 1)* 1000)/8000000;
   /* USER CODE END 2 */
 
   /* Infinite loop */
