@@ -408,13 +408,13 @@ void update7SEGbuffer(){
 		ledbuffer[1] = 1;
 	}
 	if (mode == 2){
-			ledbuffer[0] = 0;
-			ledbuffer[1] = 2;
-		}
+		ledbuffer[0] = 0;
+		ledbuffer[1] = 2;
+	}
 	if (mode == 3){
-			ledbuffer[0] = 0;
-			ledbuffer[1] = 3;
-		}
+		ledbuffer[0] = 0;
+		ledbuffer[1] = 3;
+	}
 }
 
 void scan7SEG(){
@@ -514,6 +514,7 @@ void checkBtnMode(){
 			ledbuffer[2]=led1/10;
 			ledbuffer[3]=led1%10;
 			setTimer2(1000);
+			setTimer3(250);
 			setTimer4(1000);
 			Led0_state = STATE_RED;
 			Led1_state = STATE_GREEN;
@@ -521,14 +522,17 @@ void checkBtnMode(){
 		if (mode == 1){
 			ledbuffer[2] = LED_RED/10000;
 			ledbuffer[3] = (LED_RED/1000)%10;
+			setTimer3(250);
 		}
 		if (mode == 2){
 			ledbuffer[2] = LED_AMB/10000;
 			ledbuffer[3] = (LED_AMB/1000)%10;
+			setTimer3(250);
 		}
 		if (mode == 3){
 			ledbuffer[2] = LED_GRE/10000;
 			ledbuffer[3] = (LED_GRE/1000)%10;
+			setTimer3(250);
 		}
 		btn_mode_flag = 0;
 	}
