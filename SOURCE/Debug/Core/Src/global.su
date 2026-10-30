@@ -1,0 +1,10 @@
+global.c:8:10:getLED_RED	4	static
+global.c:11:10:getLED_GREEN	4	static
+global.c:14:10:getLED_AMBER	4	static
+global.c:17:10:getLED_MAN	4	static
+global.c:20:9:getStatus	4	static
+global.c:23:6:setLED_RED	16	static
+global.c:26:6:setLED_GREEN	16	static
+global.c:29:6:setLED_AMBER	16	static
+global.c:32:6:setLED_MAN	16	static
+global.c:35:6:setStatus	16	static

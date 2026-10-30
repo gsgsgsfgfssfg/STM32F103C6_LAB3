@@ -1,21 +1,24 @@
-/*
- * button.h
- *
- *  Created on: Sep 24, 2026
- *      Author: PHUOC_NHM
- */
-
 #ifndef INC_BUTTON_H_
 #define INC_BUTTON_H_
 
-#define NORMAL_STATE GPIO_PIN_SET;
-#define PRESSED_STATE GPIO_PIN_RESET;
+#include "main.h"
+#include "software_timer.h"
 
-extern int btn_mode_flag;
-extern int btn_inc_flag;
-extern int btn_dig_flag;
-extern int btn_set_flag;
+#define NORMAL_STATE GPIO_PIN_SET
+#define PRESSED_STATE GPIO_PIN_RESET
 
+typedef struct{
+	GPIO_TypeDef *port;
+	uint16_t pin;
+	uint8_t flag;
+	uint8_t last_read;
+	uint8_t last_read_stable;
+	uint8_t tick;
+} button_Typedef;
+extern button_Typedef btn[5];
+
+void buttonInit();
 void getKeyInput();
+uint8_t isButtonPressed(uint8_t index);
 
 #endif /* INC_BUTTON_H_ */

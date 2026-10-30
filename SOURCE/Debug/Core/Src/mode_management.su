@@ -1,0 +1,8 @@
+mode_management.c:7:9:getMode	4	static
+mode_management.c:10:15:getDigitState	4	static
+mode_management.c:13:6:setMode	16	static
+mode_management.c:16:6:setDigitState	16	static
+mode_management.c:20:6:checkBtnMode	8	static
+mode_management.c:51:6:checkBtnInc	16	static
+mode_management.c:71:6:checkBtnDig	8	static
+mode_management.c:85:6:checkBtnSet	16	static

@@ -1,0 +1,2 @@
+fsm_manual.c:3:6:fsmManualInit	8	static
+fsm_manual.c:8:6:fsmManualRun	8	static

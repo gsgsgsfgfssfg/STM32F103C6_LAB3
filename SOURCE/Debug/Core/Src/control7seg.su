@@ -1,0 +1,12 @@
+control7seg.c:25:6:init7SEG	8	static
+control7seg.c:30:9:getLedOnOff	4	static
+control7seg.c:34:9:getBuffer	16	static
+control7seg.c:39:9:getNoChange	24	static
+control7seg.c:53:6:setLedOnOff	16	static
+control7seg.c:58:6:setBuffer	16	static
+control7seg.c:63:6:setLedNum	16	static
+control7seg.c:68:6:setNoChange	16	static
+control7seg.c:73:6:decreaseLedNum	16	static
+control7seg.c:78:6:update7SEGbuffer	8	static
+control7seg.c:113:6:scan7SEG	8	static
+control7seg.c:143:6:display7SEG	24	static

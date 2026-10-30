@@ -22,22 +22,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "software_timer.h"
-#include "button.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-typedef enum{
-	STATE_RED,
-	STATE_AMBER,
-	STATE_GREEN
-}TrafficLight_Typedef;
 
-typedef enum{
-	STATE_1,
-	STATE_10
-}Digit_Typedef;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -53,19 +43,6 @@ typedef enum{
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-TrafficLight_Typedef Led0_state = STATE_RED, Led1_state = STATE_GREEN;
-int LED_RED = 5000, LED_AMB = 2000, LED_GRE = 3000;
-int led0,led1;
-int ledbuffer[4];
-int nochange0 = 0, nochange1 = 0;
-
-const int MAX_LED = 4;
-int index_led = 0;
-
-const int MAX_MODE = 4;
-int mode = 0;
-
-Digit_Typedef Digit_state = STATE_1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,15 +50,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-void updateTrafficLight();
-void checkLedTrafficState();
-void update7SEGbuffer();
-void scan7SEG();
-void checkBtnMode();
-void checkBtnInc();
-void checkBtnDig();
-void checkBtnSet();
-void display7SEG(int num);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -120,38 +88,21 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
-  //TIME_CYCLES = htim2.Init.Period+1;
-  setTimer0(LED_RED);
-  led0=LED_RED/1000;
-  ledbuffer[0]=led0/10;
-  ledbuffer[1]=led0%10;
-  setTimer1(LED_GRE);
-  led1=LED_GRE/1000;
-  ledbuffer[2]=led1/10;
-  ledbuffer[3]=led1%10;
-  setTimer2(1000);
-  setTimer3(250);
-  setTimer4(1000);
-  setTimer5(10);
-  TIME_CYCLES = ( (htim2.Init.Prescaler+1)*(htim2.Init.Period + 1)* 1000)/8000000;
+  timerInit();
+  fsmAutomaticInit();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (mode == 0) checkLedTrafficState();
-	  updateTrafficLight();
-	  update7SEGbuffer();
-	  scan7SEG();
-	  getKeyInput();
-	  checkBtnMode();
-	  checkBtnInc();
-	  checkBtnDig();
-	  checkBtnSet();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  fsm_run();
+	  update7SEGbuffer();
+	  scan7SEG();
   }
   /* USER CODE END 3 */
 }
@@ -278,8 +229,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BTN_MODE_Pin BTN_INC_Pin BTN_DIG_Pin BTN_SET_Pin */
-  GPIO_InitStruct.Pin = BTN_MODE_Pin|BTN_INC_Pin|BTN_DIG_Pin|BTN_SET_Pin;
+  /*Configure GPIO pins : BTN_MODE_Pin BTN_INC_Pin BTN_DIG_Pin BTN_SET_Pin
+                           BTN_MAN_Pin */
+  GPIO_InitStruct.Pin = BTN_MODE_Pin|BTN_INC_Pin|BTN_DIG_Pin|BTN_SET_Pin
+                          |BTN_MAN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -289,325 +242,31 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	timer_run();
+	getKeyInput();
 }
 
-void checkLedTrafficState(){
-	if (timer0_flag == 1){
-		switch(Led0_state){
-		case STATE_RED:
-			Led0_state = STATE_GREEN;
-			setTimer0(LED_GRE);
-			led0 = LED_GRE/1000;
-			setTimer2(1000);
-			break;
-		case STATE_AMBER:
-			Led0_state = STATE_RED;
-			setTimer0(LED_RED);
-			led0 = LED_RED/1000;
-			setTimer2(1000);
-			break;
-		case STATE_GREEN:
-			Led0_state = STATE_AMBER;
-			setTimer0(LED_AMB);
-			led0 = LED_AMB/1000;
-			setTimer2(1000);
-			break;
-		default: Led0_state = STATE_RED;
-		}
+void fsm_run(){
+	if (getMode() == 0) {
+		fsmAutomaticRun();
+		fsmManualRun();
 	}
-	if (timer1_flag == 1){
-		switch(Led1_state){
-		case STATE_RED:
-			Led1_state = STATE_GREEN;
-			setTimer1(LED_GRE);
-			led1 = LED_GRE/1000;
-			setTimer4(1000);
-			break;
-		case STATE_AMBER:
-			Led1_state = STATE_RED;
-			setTimer1(LED_RED);
-			led1 = LED_RED/1000;
-			setTimer4(1000);
-			break;
-		case STATE_GREEN:
-			Led1_state = STATE_AMBER;
-			setTimer1(LED_AMB);
-			led1 = LED_AMB/1000;
-			setTimer4(1000);
-			break;
-		default: Led1_state = STATE_RED;
-		}
-	}
-}
 
-void updateTrafficLight(){
-	if (mode == 0){
-		switch(Led0_state){
-			case STATE_RED:
-				HAL_GPIO_WritePin(RED0_GPIO_Port,RED0_Pin,GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GRE0_GPIO_Port,AMB0_Pin|GRE0_Pin,GPIO_PIN_SET);
-				break;
-			case STATE_AMBER:
-				HAL_GPIO_WritePin(AMB0_GPIO_Port,AMB0_Pin,GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(RED0_GPIO_Port,RED0_Pin|GRE0_Pin,GPIO_PIN_SET);
-				break;
-			case STATE_GREEN:
-				HAL_GPIO_WritePin(GRE0_GPIO_Port,GRE0_Pin,GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(AMB0_GPIO_Port,RED0_Pin|AMB0_Pin,GPIO_PIN_SET);
-				break;
-			default: Led0_state = STATE_RED;
-		}
-
-		switch(Led1_state){
-			case STATE_RED:
-				HAL_GPIO_WritePin(RED1_GPIO_Port,RED1_Pin,GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GRE1_GPIO_Port,AMB1_Pin|GRE1_Pin,GPIO_PIN_SET);
-				break;
-			case STATE_AMBER:
-				HAL_GPIO_WritePin(AMB1_GPIO_Port,AMB1_Pin,GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(RED1_GPIO_Port,RED1_Pin|GRE1_Pin,GPIO_PIN_SET);
-				break;
-			case STATE_GREEN:
-				HAL_GPIO_WritePin(GRE1_GPIO_Port,GRE1_Pin,GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(AMB1_GPIO_Port,RED1_Pin|AMB1_Pin,GPIO_PIN_SET);
-				break;
-			default: Led1_state = STATE_RED;
-		  }
+	if (getMode() == 1){
+		traffic_light(TRAFFIC_RED_RED);
 	}
-	if (mode == 1){
-		HAL_GPIO_WritePin(GPIOA,RED0_Pin|RED1_Pin,GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOA,AMB0_Pin|AMB1_Pin|GRE0_Pin|GRE1_Pin,GPIO_PIN_SET);
+	if (getMode() == 2){
+		traffic_light(TRAFFIC_AMBER_AMBER);
 	}
-	if (mode == 2){
-		HAL_GPIO_WritePin(GPIOA,AMB0_Pin|AMB1_Pin,GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOA,RED0_Pin|RED1_Pin|GRE0_Pin|GRE1_Pin,GPIO_PIN_SET);
+	if (getMode() == 3){
+		traffic_light(TRAFFIC_GREEN_GREEN);
 	}
-	if (mode == 3){
-		HAL_GPIO_WritePin(GPIOA,GRE0_Pin|GRE1_Pin,GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOA,AMB0_Pin|AMB1_Pin|RED0_Pin|RED1_Pin,GPIO_PIN_SET);
+	if (getMode() == 4){
+		traffic_light(TRAFFIC_OFF);
 	}
-}
-
-void update7SEGbuffer(){
-	if (mode == 0){
-		ledbuffer[0]=led0/10;
-		ledbuffer[1]=led0%10;
-		ledbuffer[2]=led1/10;
-		ledbuffer[3]=led1%10;
-		if (timer2_flag == 1) {
-			led0--;
-			setTimer2(1000);
-		}
-		if (timer4_flag == 1) {
-			led1--;
-			setTimer4(1000);
-		}
-	}
-	if (mode == 1){
-		ledbuffer[0] = 0;
-		ledbuffer[1] = 1;
-	}
-	if (mode == 2){
-		ledbuffer[0] = 0;
-		ledbuffer[1] = 2;
-	}
-	if (mode == 3){
-		ledbuffer[0] = 0;
-		ledbuffer[1] = 3;
-	}
-}
-
-void scan7SEG(){
-	if (timer3_flag == 1){
-		index_led = (index_led+1)%MAX_LED;
-		setTimer3(250);
-	}
-	switch (index_led){
-		case 0:
-			HAL_GPIO_WritePin(GPIOA, EN0_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOA, EN1_Pin|EN2_Pin|EN3_Pin, GPIO_PIN_SET);
-			break;
-		case 1:
-			HAL_GPIO_WritePin(GPIOA, EN1_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOA, EN0_Pin|EN2_Pin|EN3_Pin, GPIO_PIN_SET);
-			break;
-		case 2:
-			HAL_GPIO_WritePin(GPIOA, EN2_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOA, EN1_Pin|EN0_Pin|EN3_Pin, GPIO_PIN_SET);
-			break;
-		case 3:
-			HAL_GPIO_WritePin(GPIOA, EN3_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOA, EN1_Pin|EN2_Pin|EN0_Pin, GPIO_PIN_SET);
-			break;
-	}
-	display7SEG(ledbuffer[index_led]);
-}
-
-void display7SEG(int num){
-	switch(num){
-		case 0:
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
-                          |SEG4_Pin|SEG5_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG6_Pin,GPIO_PIN_SET);
-			break;
-		case 1:
-			HAL_GPIO_WritePin(GPIOB,SEG1_Pin|SEG2_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG3_Pin
-                    |SEG4_Pin|SEG5_Pin|SEG6_Pin,GPIO_PIN_SET);
-			break;
-		case 2:
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG1_Pin|SEG3_Pin
-                          |SEG4_Pin|SEG6_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG2_Pin|SEG5_Pin,GPIO_PIN_SET);
-			break;
-		case 3:
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
-                          |SEG6_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG4_Pin|SEG5_Pin,GPIO_PIN_SET);
-			break;
-		case 4:
-			HAL_GPIO_WritePin(GPIOB,SEG1_Pin|SEG2_Pin
-                          |SEG5_Pin|SEG6_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG3_Pin|SEG4_Pin,GPIO_PIN_SET);
-			break;
-		case 5:
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG2_Pin|SEG3_Pin
-                          |SEG5_Pin|SEG6_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG1_Pin|SEG4_Pin,GPIO_PIN_SET);
-			break;
-		case 6:
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG2_Pin|SEG3_Pin
-                          |SEG4_Pin|SEG5_Pin|SEG6_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG1_Pin,GPIO_PIN_SET);
-			break;
-		case 7:
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG1_Pin|SEG2_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG3_Pin|SEG4_Pin|SEG5_Pin|SEG6_Pin,GPIO_PIN_SET);
-			break;
-		case 8:
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
-                          |SEG4_Pin|SEG5_Pin|SEG6_Pin,GPIO_PIN_RESET);
-			break;
-		case 9:
-			HAL_GPIO_WritePin(GPIOB,SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
-                          |SEG5_Pin|SEG6_Pin,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOB,SEG4_Pin,GPIO_PIN_SET);
-			break;
-		default:
-			HAL_GPIO_WritePin(GPIOB, SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
-					|SEG4_Pin|SEG5_Pin|SEG6_Pin, GPIO_PIN_SET);
-			break;
-	}
-}
-
-void checkBtnMode(){
-	if (btn_mode_flag == 1) {
-		Digit_state = STATE_1;
-		mode = (mode+1)%4;
-		if (mode == 0){
-			setTimer0(LED_RED);
-			led0=LED_RED/1000;
-			ledbuffer[0]=led0/10;
-			ledbuffer[1]=led0%10;
-			setTimer1(LED_GRE);
-			led1=LED_GRE/1000;
-			ledbuffer[2]=led1/10;
-			ledbuffer[3]=led1%10;
-			setTimer2(1000);
-			setTimer3(250);
-			setTimer4(1000);
-			Led0_state = STATE_RED;
-			Led1_state = STATE_GREEN;
-		}
-		if (mode == 1){
-			ledbuffer[2] = LED_RED/10000;
-			ledbuffer[3] = (LED_RED/1000)%10;
-			setTimer3(250);
-		}
-		if (mode == 2){
-			ledbuffer[2] = LED_AMB/10000;
-			ledbuffer[3] = (LED_AMB/1000)%10;
-			setTimer3(250);
-		}
-		if (mode == 3){
-			ledbuffer[2] = LED_GRE/10000;
-			ledbuffer[3] = (LED_GRE/1000)%10;
-			setTimer3(250);
-		}
-		btn_mode_flag = 0;
-	}
-}
-
-void checkBtnInc(){
-	if (btn_inc_flag == 1){
-		if (mode != 0){
-			if (Digit_state == STATE_1) ledbuffer[3] = (ledbuffer[3]+1)%10;
-			if (Digit_state == STATE_10) ledbuffer[2] = (ledbuffer[2]+1)%10;
-			if (mode == 1){
-				if (ledbuffer[2]*10 + ledbuffer[3] < 2){
-					ledbuffer[3]=2;
-				}
-			}
-			if (mode == 2 || mode == 3){
-				if (ledbuffer[2]*10 + ledbuffer[3] < 1){
-					ledbuffer[3]=1;
-				}
-			}
-		}
-		btn_inc_flag = 0;
-	}
-}
-
-void checkBtnDig(){
-	if (btn_dig_flag == 1){
-		switch(Digit_state){
-			case STATE_1:
-				Digit_state = STATE_10;
-				break;
-			case STATE_10:
-				Digit_state = STATE_1;
-				break;
-		}
-		btn_dig_flag = 0;
-	}
-}
-
-void checkBtnSet(){
-	if (btn_set_flag == 1){
-		if (mode == 1){
-			LED_RED = (ledbuffer[2]*10 + ledbuffer[3])*1000;
-			if (LED_AMB >= LED_RED){
-				LED_AMB = LED_RED - 1000;
-				LED_GRE = 1000;
-			}
-			if (LED_GRE >= LED_RED){
-				LED_GRE = LED_RED - 1000;
-				LED_AMB = 1000;
-			}
-			if (LED_GRE + LED_AMB != LED_RED) LED_GRE = LED_RED - LED_AMB;
-		}
-		if (mode == 2){
-			LED_AMB = (ledbuffer[2]*10 + ledbuffer[3])*1000;
-			if (LED_AMB >= LED_RED){
-				LED_AMB = LED_RED - 1000;
-				LED_GRE = 1000;
-			}
-			if (LED_GRE + LED_AMB != LED_RED) LED_GRE = LED_RED - LED_AMB;
-			ledbuffer[2] = (LED_AMB/1000)/10;
-			ledbuffer[3] = (LED_AMB/1000)%10;
-		}
-		if (mode == 3) {
-			LED_GRE = (ledbuffer[2]*10 + ledbuffer[3])*1000;
-			if (LED_GRE >= LED_RED){
-				LED_GRE = LED_RED - 1000;
-				LED_AMB = 1000;
-			}
-			if (LED_GRE + LED_AMB != LED_RED) LED_AMB = LED_RED - LED_GRE;
-			ledbuffer[2] = (LED_GRE/1000)/10;
-			ledbuffer[3] = (LED_GRE/1000)%10;
-		}
-		btn_set_flag = 0;
-	}
+	checkBtnMode();
+	checkBtnInc();
+	checkBtnDig();
+	checkBtnSet();
 }
 /* USER CODE END 4 */
 
