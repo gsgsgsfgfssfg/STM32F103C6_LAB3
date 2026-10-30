@@ -10,6 +10,7 @@ C_SRCS += \
 ../Core/Src/fsm_automatic.c \
 ../Core/Src/fsm_manual.c \
 ../Core/Src/global.c \
+../Core/Src/led_blinking.c \
 ../Core/Src/main.c \
 ../Core/Src/mode_management.c \
 ../Core/Src/software_timer.c \
@@ -26,6 +27,7 @@ OBJS += \
 ./Core/Src/fsm_automatic.o \
 ./Core/Src/fsm_manual.o \
 ./Core/Src/global.o \
+./Core/Src/led_blinking.o \
 ./Core/Src/main.o \
 ./Core/Src/mode_management.o \
 ./Core/Src/software_timer.o \
@@ -42,6 +44,7 @@ C_DEPS += \
 ./Core/Src/fsm_automatic.d \
 ./Core/Src/fsm_manual.d \
 ./Core/Src/global.d \
+./Core/Src/led_blinking.d \
 ./Core/Src/main.d \
 ./Core/Src/mode_management.d \
 ./Core/Src/software_timer.d \

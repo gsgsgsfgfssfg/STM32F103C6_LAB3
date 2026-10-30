@@ -27,7 +27,7 @@ Core/Src/mode_management.o: ../Core/Src/mode_management.c \
  ../Core/Inc/button.h ../Core/Inc/main.h ../Core/Inc/software_timer.h \
  ../Core/Inc/traffic_light.h ../Core/Inc/fsm_automatic.h \
  ../Core/Inc/control7seg.h ../Core/Inc/mode_management.h \
- ../Core/Inc/fsm_manual.h
+ ../Core/Inc/fsm_manual.h ../Core/Inc/led_blinking.h
 
 ../Core/Inc/mode_management.h:
 
@@ -96,3 +96,5 @@ Core/Src/mode_management.o: ../Core/Src/mode_management.c \
 ../Core/Inc/mode_management.h:
 
 ../Core/Inc/fsm_manual.h:
+
+../Core/Inc/led_blinking.h:

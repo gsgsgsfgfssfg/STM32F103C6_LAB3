@@ -3,6 +3,7 @@
 "./Core/Src/fsm_automatic.o"
 "./Core/Src/fsm_manual.o"
 "./Core/Src/global.o"
+"./Core/Src/led_blinking.o"
 "./Core/Src/main.o"
 "./Core/Src/mode_management.o"
 "./Core/Src/software_timer.o"

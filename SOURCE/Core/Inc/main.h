@@ -40,6 +40,7 @@ extern "C" {
 #include "fsm_manual.h"
 #include "control7seg.h"
 #include "mode_management.h"
+#include "led_blinking.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -67,7 +68,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

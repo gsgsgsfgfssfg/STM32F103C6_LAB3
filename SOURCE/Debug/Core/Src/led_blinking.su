@@ -1,0 +1,5 @@
+led_blinking.c:3:6:blinkInit	8	static
+led_blinking.c:9:6:blinkStart	8	static
+led_blinking.c:14:6:blinkRun	8	static
+led_blinking.c:30:6:toggleLED	8	static
+led_blinking.c:33:6:writeLED	16	static

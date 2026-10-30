@@ -19,6 +19,7 @@ void setDigitState(Digit_Typedef newDigitState){
 
 void checkBtnMode(){
 	if (isButtonPressed(0)) {
+		blinkStart();
 		setLedOnOff(LED_ON);
 		setDigitState(STATE_1);
 		setMode((getMode()+1)%MAX_MODE);
@@ -50,26 +51,22 @@ void checkBtnMode(){
 
 void checkBtnInc(){
 	if (isButtonPressed(1) && getMode() != 0){
+		blinkStart();
 		setLedOnOff(LED_ON);
-		if (getMode() != 0){
-			if (getDigitState() == STATE_1) setBuffer(3,(getBuffer(3)+1)%10);
-			if (getDigitState() == STATE_10) setBuffer(2,(getBuffer(2)+1)%10);
-			if (getMode() == 1){
-				if (getBuffer(2)*10 + getBuffer(3) < 2){
-					setBuffer(3,2);
-				}
-			}
-			if (getMode() == 2 || getMode() == 3 || getMode() == 4){
-				if (getBuffer(2)*10 + getBuffer(3) < 1){
-					setBuffer(3,1);
-				}
-			}
+		if (getDigitState() == STATE_1) setBuffer(3,(getBuffer(3)+1)%10);
+		if (getDigitState() == STATE_10) setBuffer(2,(getBuffer(2)+1)%10);
+		if (getMode() == 1 && (getBuffer(2)*10 + getBuffer(3) < 2)){
+			setBuffer(3,2);
+		}
+		if (getMode() !=1 && (getBuffer(2)*10 + getBuffer(3) < 1)){
+			setBuffer(3,1);
 		}
 	}
 }
 
 void checkBtnDig(){
 	if (isButtonPressed(2) && getMode() != 0){
+		blinkStart();
 		setLedOnOff(LED_ON);
 		switch(getDigitState()){
 			case STATE_1:
@@ -84,6 +81,7 @@ void checkBtnDig(){
 
 void checkBtnSet(){
 	if (isButtonPressed(3) && getMode() != 0){
+		blinkStart();
 		setLedOnOff(LED_ON);
 		if (getMode() == 1){
 			setLED_RED((getBuffer(2)*10 + getBuffer(3))*1000);

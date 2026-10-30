@@ -15,6 +15,7 @@ void fsmAutomaticRun(){
 			traffic_light(TRAFFIC_RED_GREEN);
 			if (isButtonPressed(4) == 1) {
 				fsmManualInit();
+				blinkStart();
 				break;
 			}
 			if (getTimerFlag(0) == 1){
@@ -29,6 +30,7 @@ void fsmAutomaticRun(){
 			traffic_light(TRAFFIC_RED_AMBER);
 			if (isButtonPressed(4) == 1) {
 				setStatus(MANUAL_RED_AMBER);
+				blinkStart();
 				break;
 			}
 			if (getTimerFlag(0) == 1){
@@ -45,6 +47,7 @@ void fsmAutomaticRun(){
 			traffic_light(TRAFFIC_GREEN_RED);
 			if (isButtonPressed(4) == 1) {
 				setStatus(MANUAL_GREEN_RED);
+				blinkStart();
 				break;
 			}
 			if (getTimerFlag(0) == 1){
@@ -59,6 +62,7 @@ void fsmAutomaticRun(){
 			traffic_light(TRAFFIC_AMBER_RED);
 			if (isButtonPressed(4) == 1) {
 				setStatus(MANUAL_AMBER_RED);
+				blinkStart();
 				break;
 			}
 			if (getTimerFlag(0) == 1){

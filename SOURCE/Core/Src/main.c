@@ -90,6 +90,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim2);
   timerInit();
   fsmAutomaticInit();
+  blinkInit();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,6 +104,7 @@ int main(void)
 	  fsm_run();
 	  update7SEGbuffer();
 	  scan7SEG();
+	  blinkRun();
   }
   /* USER CODE END 3 */
 }
@@ -203,7 +205,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, EN0_Pin|EN1_Pin|EN2_Pin|EN3_Pin
                           |RED0_Pin|AMB0_Pin|GRE0_Pin|RED1_Pin
-                          |AMB1_Pin|GRE1_Pin, GPIO_PIN_RESET);
+                          |AMB1_Pin|GRE1_Pin|DEBUGGG_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
@@ -211,10 +213,10 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : EN0_Pin EN1_Pin EN2_Pin EN3_Pin
                            RED0_Pin AMB0_Pin GRE0_Pin RED1_Pin
-                           AMB1_Pin GRE1_Pin */
+                           AMB1_Pin GRE1_Pin DEBUGGG_Pin */
   GPIO_InitStruct.Pin = EN0_Pin|EN1_Pin|EN2_Pin|EN3_Pin
                           |RED0_Pin|AMB0_Pin|GRE0_Pin|RED1_Pin
-                          |AMB1_Pin|GRE1_Pin;
+                          |AMB1_Pin|GRE1_Pin|DEBUGGG_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

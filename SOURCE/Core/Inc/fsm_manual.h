@@ -7,6 +7,7 @@
 #include "control7seg.h"
 #include "mode_management.h"
 #include "fsm_automatic.h"
+#include "led_blinking.h"
 
 #define MANUAL_RED_GREEN 21
 #define MANUAL_RED_AMBER 22

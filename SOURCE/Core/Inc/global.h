@@ -44,6 +44,8 @@ extern TIM_HandleTypeDef htim2;
 #define AMB1_GPIO_Port GPIOA
 #define GRE1_Pin GPIO_PIN_10
 #define GRE1_GPIO_Port GPIOA
+#define DEBUGGG_Pin GPIO_PIN_11
+#define DEBUGGG_GPIO_Port GPIOA
 #define SEG3_Pin GPIO_PIN_3
 #define SEG3_GPIO_Port GPIOB
 #define SEG4_Pin GPIO_PIN_4

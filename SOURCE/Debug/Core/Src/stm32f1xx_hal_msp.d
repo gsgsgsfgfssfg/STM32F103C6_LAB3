@@ -26,7 +26,8 @@ Core/Src/stm32f1xx_hal_msp.o: ../Core/Src/stm32f1xx_hal_msp.c \
  ../Core/Inc/global.h ../Core/Inc/software_timer.h ../Core/Inc/button.h \
  ../Core/Inc/main.h ../Core/Inc/traffic_light.h \
  ../Core/Inc/fsm_automatic.h ../Core/Inc/control7seg.h \
- ../Core/Inc/mode_management.h ../Core/Inc/fsm_manual.h
+ ../Core/Inc/mode_management.h ../Core/Inc/fsm_manual.h \
+ ../Core/Inc/led_blinking.h
 
 ../Core/Inc/main.h:
 
@@ -95,3 +96,5 @@ Core/Src/stm32f1xx_hal_msp.o: ../Core/Src/stm32f1xx_hal_msp.c \
 ../Core/Inc/mode_management.h:
 
 ../Core/Inc/fsm_manual.h:
+
+../Core/Inc/led_blinking.h:
